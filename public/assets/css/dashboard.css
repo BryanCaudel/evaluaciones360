@@ -225,3 +225,70 @@ table a[href*="cancelar_evaluacion.php"]:hover {
     font-size: 14px;
     white-space: pre-wrap;
 }
+.sidebar form button.button {
+    background: #1abc9c;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    width: 100%;
+    margin: 10px 0;
+    font-weight: bold;
+    font-size: 14px;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    box-sizing: border-box;
+}
+
+.sidebar form button.button:hover {
+    background: #16a085;
+}
+table button,
+table form button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+table button:hover,
+table form button:hover {
+    background-color: #2980b9;
+}
+
+/* Estilos específicos para acciones */
+table button.btn-ver {
+    background-color: #9b59b6;
+}
+table button.btn-ver:hover {
+    background-color: #8e44ad;
+}
+
+table button.btn-editar {
+    background-color: #2ecc71;
+}
+table button.btn-editar:hover {
+    background-color: #27ae60;
+}
+
+table button.btn-cancelar {
+    background-color: #e74c3c;
+}
+table button.btn-cancelar:hover {
+    background-color: #c0392b;
+}
+
+table button.btn-asignar {
+    background-color: #f39c12;
+}
+table button.btn-asignar:hover {
+    background-color: #d68910;
+}
+

@@ -43,6 +43,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
     </form>
 
-    
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="continuar_evaluacion.php" style="
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        ">
+            ¿Ya comenzaste? Continuar evaluación
+        </a>
+    </div>
 </body>
 </html>

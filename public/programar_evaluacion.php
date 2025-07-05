@@ -10,17 +10,30 @@ if (!isset($_SESSION['user']) || !in_array($_SESSION['rol'], ['super_admin', 'ad
 
 $mensaje = '';
 $rol = $_SESSION['rol'];
-$preselect_user = $_GET['preselect_user'] ?? null;
 
-// Obtener empresa directamente si viene de preselect_user
-if ($rol === 'super_admin' && $preselect_user && !isset($_GET['empresa_id'])) {
-    $stmt = $conexion->prepare("SELECT empresa_id FROM usuarios WHERE id = ?");
-    $stmt->bind_param("i", $preselect_user);
-    $stmt->execute();
-    $empresa_row = $stmt->get_result()->fetch_assoc();
-    $_GET['empresa_id'] = $empresa_row['empresa_id'] ?? null;
+// Guardar empresa seleccionada si es super admin
+if ($rol === 'super_admin' && isset($_POST['empresa_id'])) {
+    $_SESSION['empresa_seleccionada'] = intval($_POST['empresa_id']);
 }
 
+// Guardar usuario preseleccionado desde botón del dashboard
+if (isset($_POST['preselect_user'])) {
+    $_SESSION['preselect_user'] = intval($_POST['preselect_user']);
+
+    // Si es super admin, obtener empresa de ese usuario
+    if ($rol === 'super_admin') {
+        $stmt = $conexion->prepare("SELECT empresa_id FROM usuarios WHERE id = ?");
+        $stmt->bind_param("i", $_SESSION['preselect_user']);
+        $stmt->execute();
+        $empresa_row = $stmt->get_result()->fetch_assoc();
+        $_SESSION['empresa_seleccionada'] = $empresa_row['empresa_id'] ?? null;
+    }
+}
+
+$preselect_user = $_SESSION['preselect_user'] ?? null;
+$empresa_id = ($rol === 'admin_empresa') ? $_SESSION['empresa_id'] : ($_SESSION['empresa_seleccionada'] ?? null);
+
+// Guardar evaluación
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['evaluado_id'], $_POST['fecha'])) {
     $fecha = $_POST['fecha'];
     $evaluado_id = intval($_POST['evaluado_id']);
@@ -43,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['evaluado_id'], $_POST
         $stmt->bind_param("isissi", $empresa_id, $nombre_evaluado, $evaluado_id, $fecha, $codigo, $creada_por);
 
         if ($stmt->execute()) {
+            unset($_SESSION['preselect_user']);
             header("Location: dashboard.php");
             exit;
         } else {
@@ -90,13 +104,12 @@ if ($rol === 'super_admin') {
     <?php endif; ?>
 
     <?php if ($rol === 'super_admin' && !$preselect_user): ?>
-        <!-- Selección de empresa solo si NO se asignó usuario -->
-        <form method="GET">
+        <form method="POST">
             <label>Empresa:</label>
             <select name="empresa_id" onchange="this.form.submit()" required>
                 <option value="">--Selecciona--</option>
                 <?php while ($empresa = $empresas->fetch_assoc()): ?>
-                    <option value="<?= $empresa['id'] ?>" <?= (isset($_GET['empresa_id']) && $_GET['empresa_id'] == $empresa['id']) ? 'selected' : '' ?>>
+                    <option value="<?= $empresa['id'] ?>" <?= (isset($_SESSION['empresa_seleccionada']) && $_SESSION['empresa_seleccionada'] == $empresa['id']) ? 'selected' : '' ?>>
                         <?= htmlspecialchars($empresa['nombre']) ?>
                     </option>
                 <?php endwhile; ?>
@@ -105,7 +118,6 @@ if ($rol === 'super_admin') {
     <?php endif; ?>
 
     <?php
-    $empresa_id = ($rol === 'admin_empresa') ? $_SESSION['empresa_id'] : ($_GET['empresa_id'] ?? null);
     if ($empresa_id):
         $q = $conexion->prepare("SELECT id, user FROM usuarios WHERE rol_id = 4 AND empresa_id = ?");
         $q->bind_param("i", $empresa_id);

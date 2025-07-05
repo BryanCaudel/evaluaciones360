@@ -8,7 +8,13 @@ if (!isset($_SESSION['user']) || !in_array($_SESSION['rol'], ['super_admin', 'ad
 }
 
 $mensaje = '';
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['usuario_id'])) {
+    $id = intval($_POST['usuario_id']);
+} else {
+    echo "ID del usuario no proporcionado.";
+    exit;
+}
 
 // Obtener datos actuales del usuario
 $stmt = $conexion->prepare("SELECT id, user, empresa_id, rol_id FROM usuarios WHERE id = ?");
@@ -28,13 +34,13 @@ if ($_SESSION['rol'] === 'admin_empresa' && $usuario['empresa_id'] != $_SESSION[
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Si se enviaron cambios
+if (isset($_POST['user']) && isset($_POST['rol_id'])) {
     $nuevo_usuario = trim($_POST['user']);
     $nuevo_rol_id = intval($_POST['rol_id']);
     $nueva_pass = $_POST['password'] ?? '';
     $nueva_empresa_id = $_SESSION['rol'] === 'super_admin' ? intval($_POST['empresa_id']) : $_SESSION['empresa_id'];
 
-    // Verificar si otro usuario ya tiene ese nombre
     $stmt_verif = $conexion->prepare("SELECT id FROM usuarios WHERE user = ? AND id != ?");
     $stmt_verif->bind_param("si", $nuevo_usuario, $id);
     $stmt_verif->execute();
@@ -88,6 +94,8 @@ if ($_SESSION['rol'] === 'super_admin') {
         <?php endif; ?>
 
         <form method="POST">
+            <input type="hidden" name="usuario_id" value="<?= $usuario['id'] ?>">
+
             <label>Usuario:</label>
             <input type="text" name="user" value="<?= htmlspecialchars($usuario['user']) ?>" required>
 

@@ -5,10 +5,11 @@ require_once '../src/config/database.php';
 $mostrarBotonGrafico = false;
 $evaluacion_id = null;
 
-if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'evaluado') {
+// Solo mostrar el gráfico si es un usuario con rol 'evaluado' que inició sesión
+if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'evaluado' && isset($_SESSION['usuario_id'])) {
     $usuario_id = $_SESSION['usuario_id'];
 
-    // Buscar evaluación del usuario
+    // Buscar evaluación asociada a ese usuario
     $stmt = $conexion->prepare("SELECT id FROM evaluaciones WHERE evaluado_id = ?");
     $stmt->bind_param("i", $usuario_id);
     $stmt->execute();
@@ -16,6 +17,7 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'evaluado') {
 
     if ($row = $res->fetch_assoc()) {
         $evaluacion_id = $row['id'];
+        $_SESSION['evaluacion_id'] = $evaluacion_id;
         $mostrarBotonGrafico = true;
     }
 }
@@ -33,13 +35,15 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'evaluado') {
         <h1>¡Gracias por completar la evaluación!</h1>
         <p>Tu retroalimentación ha sido registrada exitosamente.</p>
 
-
         <?php if ($mostrarBotonGrafico && $evaluacion_id): ?>
-            <a class="boton" href="grafico_resultados.php?evaluacion_id=<?= $evaluacion_id ?>">Ver mi gráfico de evaluación</a>
+            <form action="grafico_resultados.php" method="post" style="display:inline;">
+                <input type="hidden" name="evaluacion_id" value="<?= $evaluacion_id ?>">
+                <button type="submit" class="boton">Ver mi gráfico de evaluación</button>
+            </form>
         <?php endif; ?>
+
         <br><br>
         <a class="boton" href="index.php">Volver al inicio</a>
-
     </div>
 </body>
 </html>
