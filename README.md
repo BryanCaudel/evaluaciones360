@@ -1,12 +1,24 @@
-# Evaluaciones360
+# Evaluación360
 
-## Descripción
+Sistema web para aplicar evaluaciones de desempeño 360° en organizaciones, con soporte para autoevaluación, gráficas por dimensión, reporte en PDF y control por roles.
 
-Evaluaciones360 es un proyecto en desarrollo que busca crear una plataforma para gestionar evaluaciones 360° de personal. Este repositorio contiene el código fuente inicial y la estructura básica para el control de versiones y colaboración.
+## Características
 
-### Ramas principales:
+- Registro de empresas y usuarios
+- Evaluación en bloques de 10 preguntas
+- Acceso externo por código temporal
+- Autoevaluación con login de usuario
+- Visualización de resultados con gráficas
+- Generación de reporte PDF
+- API REST para exportar resultados
 
-- `main`: Contiene la versión estable del código.
-- `feature/*`: Ramas para desarrollar nuevas funcionalidades o correcciones, por ejemplo:
-  - `feature/login`
-  - `feature/evaluaciones`
+## Tecnologías utilizadas
+
+- PHP estructurado (MVC)
+- MySQL
+- Chart.js
+- html2pdf.js
+- CSS personalizado
+
+## Estructura del Proyecto
+
